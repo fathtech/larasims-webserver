@@ -1,0 +1,27 @@
+version: '3'
+# Services block
+services:
+  web-server:
+    container_name: "web-server"
+    image: litespeedtech/openlitespeed:1.7.16-lsphp81
+    volumes:
+      - ./lsws/conf:/usr/local/lsws/conf
+      - ./lsws/admin-conf:/usr/local/lsws/admin/conf
+      - ./sites:/var/www/vhosts/
+      - ./logs:/usr/local/lsws/logs/
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+      - "7080:7080"
+    restart: always
+    environment:
+      TZ: "Asia/Jakarta"
+    networks:
+      - netcom
+# Networks block
+networks:
+  netcom:
+    ipam:
+      config:
+        - subnet: 192.168.100.0/24
