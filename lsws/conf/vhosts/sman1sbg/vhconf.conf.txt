@@ -1,40 +1,19 @@
-docroot $VH_ROOT/html/
-adminemails support@fathtech.co.id
-enablegzip 1
 enablebr 1
+docroot $VH_ROOT/html/
+enablegzip 1
+adminemails support@fathtech.co.id
 enableipgeo 1
-
-errorlog $VH_ROOT/logs/error_log {
-    useserver 1
-    loglevel ERROR
-    rollingsize 10M
-    keepdays 3
-}
-
-accesslog $VH_ROOT/logs/access_log {
-    useserver 0
-    rollingsize 10M
-}
-
-index  {
-    useserver 1
-    indexfiles index.php, index.html
-}
-
-extprocessor Docker WS {
-    type proxy
-    address app-server
-    maxconns 1500
-    inittimeout 60
-    retrytimeout 7200
-    respbuffer 0
-}
 
 context / {
     type proxy
     handler Docker WS
     adddefaultcharset off
     enableipgeo 1
+}
+
+index  {
+    useserver 1
+    indexfiles index.php, index.html
 }
 
 rewrite  {
@@ -87,4 +66,25 @@ no-vary                          0
 addEtag                          0
     MY_END
     ls_enabled 1
+}
+
+errorlog $VH_ROOT/logs/error_log {
+    rollingsize 10M
+    keepdays 3
+    loglevel ERROR
+    useserver 1
+}
+
+accesslog $VH_ROOT/logs/access_log {
+    useserver 0
+    rollingsize 10M
+}
+
+extprocessor Docker WS {
+    maxconns 1500
+    inittimeout 60
+    retrytimeout 7200
+    respbuffer 0
+    type proxy
+    address app-server
 }

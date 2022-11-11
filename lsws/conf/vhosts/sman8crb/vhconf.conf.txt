@@ -1,40 +1,38 @@
-docroot $VH_ROOT/html/
-adminemails support@fathtech.co.id
-enablegzip 1
-enablebr 1
 enableipgeo 1
-
-errorlog $VH_ROOT/logs/error_log {
-    useserver 1
-    loglevel ERROR
-    rollingsize 10M
-    keepdays 3
-}
-
-accesslog $VH_ROOT/logs/access_log {
-    useserver 0
-    rollingsize 10M
-}
-
-index  {
-    useserver 1
-    indexfiles index.php, index.html
-}
-
-extprocessor Docker WS {
-    type proxy
-    address app-server
-    maxconns 1500
-    inittimeout 60
-    retrytimeout 7200
-    respbuffer 0
-}
+docroot $VH_ROOT/html/
+enablegzip 1
+adminemails support@fathtech.co.id
+enablebr 1
 
 context / {
+    adddefaultcharset off
     type proxy
     handler Docker WS
-    adddefaultcharset off
     enableipgeo 1
+}
+
+module cache {
+    note <<<MY_END
+enableCache                      0
+enablePrivateCache               0
+checkPublicCache                 1
+checkPrivateCache                1
+qsCache                          1
+reqCookieCache                   1
+ignoreReqCacheCtrl               1
+ignoreRespCacheCtrl              0
+respCookieCache                  1
+expireInSeconds                  3600
+privateExpireInSeconds           3600
+maxStaleAge                      200
+maxCacheObjSize                  10000000
+storagepath                      cachedata
+noCacheDomain
+noCacheUrl
+no-vary                          0
+addEtag                          0
+    MY_END
+    ls_enabled 1
 }
 
 rewrite  {
@@ -65,26 +63,28 @@ rewrite  {
     MY_END
 }
 
-module cache {
-    note <<<MY_END
-enableCache                      0
-enablePrivateCache               0
-checkPublicCache                 1
-checkPrivateCache                1
-qsCache                          1
-reqCookieCache                   1
-ignoreReqCacheCtrl               1
-ignoreRespCacheCtrl              0
-respCookieCache                  1
-expireInSeconds                  3600
-privateExpireInSeconds           3600
-maxStaleAge                      200
-maxCacheObjSize                  10000000
-storagepath                      cachedata
-noCacheDomain
-noCacheUrl
-no-vary                          0
-addEtag                          0
-    MY_END
-    ls_enabled 1
+index  {
+    useserver 1
+    indexfiles index.php, index.html
+}
+
+accesslog $VH_ROOT/logs/access_log {
+    useserver 0
+    rollingsize 10M
+}
+
+extprocessor Docker WS {
+    inittimeout 60
+    retrytimeout 7200
+    address app-server
+    maxconns 1500
+    respbuffer 0
+    type proxy
+}
+
+errorlog $VH_ROOT/logs/error_log {
+    useserver 1
+    rollingsize 10M
+    loglevel ERROR
+    keepdays 3
 }

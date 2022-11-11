@@ -205,7 +205,61 @@ privateExpireInSeconds 3600
   ls_enabled              1
 }
 
-virtualhost larasims {
+virtualhost sman1crb {
+  vhRoot                  /var/www/vhosts/$VH_NAME
+  configFile              $SERVER_ROOT/conf/vhosts/$VH_NAME/vhconf.conf
+  allowSymbolLink         1
+  enableScript            1
+  restrained              1
+  maxKeepAliveReq         10
+}
+
+virtualhost sman1sbg {
+  vhRoot                  /var/www/vhosts/$VH_NAME
+  configFile              $SERVER_ROOT/conf/vhosts/$VH_NAME/vhconf.conf
+  allowSymbolLink         1
+  enableScript            1
+  restrained              1
+  maxKeepAliveReq         10
+}
+
+virtualhost sman2crb {
+  vhRoot                  /var/www/vhosts/$VH_NAME
+  configFile              $SERVER_ROOT/conf/vhosts/$VH_NAME/vhconf.conf
+  allowSymbolLink         1
+  enableScript            1
+  restrained              1
+  maxKeepAliveReq         10
+}
+
+virtualhost sman3crb {
+  vhRoot                  /var/www/vhosts/$VH_NAME
+  configFile              $SERVER_ROOT/conf/vhosts/$VH_NAME/vhconf.conf
+  allowSymbolLink         1
+  enableScript            1
+  restrained              1
+  maxKeepAliveReq         10
+}
+
+virtualhost sman4crb {
+  vhRoot                  /var/www/vhosts/$VH_NAME
+  configFile              $SERVER_ROOT/conf/vhosts/$VH_NAME/vhconf.conf
+  allowSymbolLink         1
+  enableScript            1
+  restrained              1
+  maxKeepAliveReq         10
+}
+
+virtualhost sman7crb {
+  vhRoot                  /var/www/vhosts/$VH_NAME
+  configFile              $SERVER_ROOT/conf/vhosts/$VH_NAME/vhconf.conf
+  allowSymbolLink         1
+  enableScript            1
+  restrained              1
+  maxKeepAliveReq         10
+}
+
+virtualhost sman8crb {
   vhRoot                  /var/www/vhosts/$VH_NAME
   configFile              $SERVER_ROOT/conf/vhosts/$VH_NAME/vhconf.conf
   allowSymbolLink         1
@@ -218,7 +272,6 @@ listener HTTP {
   address                 *:80
   reusePort               1
   secure                  0
-  map                     larasims *
 }
 
 listener HTTPS {
@@ -226,7 +279,6 @@ listener HTTPS {
   secure                  1
   keyFile                 /usr/local/lsws/admin/conf/webadmin.key
   certFile                /usr/local/lsws/admin/conf/webadmin.crt
-  map                     larasims *
 }
 
 vhTemplate centralConfigLog {

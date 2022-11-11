@@ -213,7 +213,61 @@ privateexpireinseconds 3600
     ls_enabled 1
 }
 
-virtualhost larasims {
+virtualhost sman1crb {
+    vhroot /var/www/vhosts/$VH_NAME
+    configfile $SERVER_ROOT/conf/vhosts/$VH_NAME/vhconf.conf
+    allowsymbollink 1
+    enablescript 1
+    restrained 1
+    maxkeepalivereq 10
+}
+
+virtualhost sman1sbg {
+    vhroot /var/www/vhosts/$VH_NAME
+    configfile $SERVER_ROOT/conf/vhosts/$VH_NAME/vhconf.conf
+    allowsymbollink 1
+    enablescript 1
+    restrained 1
+    maxkeepalivereq 10
+}
+
+virtualhost sman2crb {
+    vhroot /var/www/vhosts/$VH_NAME
+    configfile $SERVER_ROOT/conf/vhosts/$VH_NAME/vhconf.conf
+    allowsymbollink 1
+    enablescript 1
+    restrained 1
+    maxkeepalivereq 10
+}
+
+virtualhost sman3crb {
+    vhroot /var/www/vhosts/$VH_NAME
+    configfile $SERVER_ROOT/conf/vhosts/$VH_NAME/vhconf.conf
+    allowsymbollink 1
+    enablescript 1
+    restrained 1
+    maxkeepalivereq 10
+}
+
+virtualhost sman4crb {
+    vhroot /var/www/vhosts/$VH_NAME
+    configfile $SERVER_ROOT/conf/vhosts/$VH_NAME/vhconf.conf
+    allowsymbollink 1
+    enablescript 1
+    restrained 1
+    maxkeepalivereq 10
+}
+
+virtualhost sman7crb {
+    vhroot /var/www/vhosts/$VH_NAME
+    configfile $SERVER_ROOT/conf/vhosts/$VH_NAME/vhconf.conf
+    allowsymbollink 1
+    enablescript 1
+    restrained 1
+    maxkeepalivereq 10
+}
+
+virtualhost sman8crb {
     vhroot /var/www/vhosts/$VH_NAME
     configfile $SERVER_ROOT/conf/vhosts/$VH_NAME/vhconf.conf
     allowsymbollink 1
@@ -226,7 +280,6 @@ listener HTTP {
     address *:80
     reuseport 1
     secure 0
-    map larasims *
 }
 
 listener HTTPS {
@@ -234,7 +287,6 @@ listener HTTPS {
     secure 1
     keyfile /usr/local/lsws/admin/conf/webadmin.key
     certfile /usr/local/lsws/admin/conf/webadmin.crt
-    map larasims *
 }
 
 vhtemplate centralConfigLog {

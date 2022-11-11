@@ -1,25 +1,8 @@
-docroot $VH_ROOT/html/
-adminemails support@fathtech.co.id
-enablegzip 1
-enablebr 1
 enableipgeo 1
-
-errorlog $VH_ROOT/logs/error_log {
-    useserver 1
-    loglevel ERROR
-    rollingsize 10M
-    keepdays 3
-}
-
-accesslog $VH_ROOT/logs/access_log {
-    useserver 0
-    rollingsize 10M
-}
-
-index  {
-    useserver 1
-    indexfiles index.php, index.html
-}
+enablebr 1
+adminemails support@fathtech.co.id
+docroot $VH_ROOT/html/
+enablegzip 1
 
 extprocessor Docker WS {
     type proxy
@@ -28,13 +11,6 @@ extprocessor Docker WS {
     inittimeout 60
     retrytimeout 7200
     respbuffer 0
-}
-
-context / {
-    type proxy
-    handler Docker WS
-    adddefaultcharset off
-    enableipgeo 1
 }
 
 rewrite  {
@@ -65,6 +41,18 @@ rewrite  {
     MY_END
 }
 
+index  {
+    indexfiles index.php, index.html
+    useserver 1
+}
+
+context / {
+    enableipgeo 1
+    type proxy
+    handler Docker WS
+    adddefaultcharset off
+}
+
 module cache {
     note <<<MY_END
 enableCache                      0
@@ -87,4 +75,16 @@ no-vary                          0
 addEtag                          0
     MY_END
     ls_enabled 1
+}
+
+errorlog $VH_ROOT/logs/error_log {
+    loglevel ERROR
+    keepdays 3
+    useserver 1
+    rollingsize 10M
+}
+
+accesslog $VH_ROOT/logs/access_log {
+    useserver 0
+    rollingsize 10M
 }
