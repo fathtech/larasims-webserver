@@ -22,6 +22,7 @@ services:
 # Networks block
 networks:
   netcom:
+    name: server
     ipam:
       config:
         - subnet: 192.168.100.0/24
