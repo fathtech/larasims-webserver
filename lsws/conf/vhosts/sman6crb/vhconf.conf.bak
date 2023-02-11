@@ -27,13 +27,13 @@ accessControl  {
   allow                   *
 }
 
-context / {
-  location                $DOC_ROOT/
-  allowBrowse             1
-
-  rewrite  {
-RewriteFile .htaccess
-  }
+extprocessor sman6crb-app {
+  type                    proxy
+  address                 sman6crb_app-server_1
+  maxConns                1500
+  initTimeout             60
+  retryTimeout            7200
+  respBuffer              0
 }
 
 rewrite  {

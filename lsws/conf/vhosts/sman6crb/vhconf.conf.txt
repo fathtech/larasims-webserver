@@ -26,9 +26,9 @@ expires  {
 }
 
 rewrite  {
-    enable 1
     autoloadhtaccess 1
     loglevel 0
+    enable 1
 }
 
 accesslog $SERVER_ROOT/logs/$VH_NAME.access.log {
@@ -39,13 +39,9 @@ accesslog $SERVER_ROOT/logs/$VH_NAME.access.log {
 }
 
 context / {
-    allowbrowse 1
-    location $DOC_ROOT/
-
-    rewrite  {
-        unknownkeywords rewritefile .htaccess
-        rules rewritefile .htaccess
-    }
+    handler sman6crb-app
+    adddefaultcharset off
+    type proxy
 }
 
 errorlog  {
