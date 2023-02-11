@@ -1,90 +1,59 @@
-docroot $VH_ROOT/html/
-adminemails support@fathtech.co.id
 enablegzip 1
-enablebr 1
-enableipgeo 1
+docroot $VH_ROOT
 
-errorlog $VH_ROOT/logs/error_log {
-    useserver 1
-    loglevel ERROR
-    rollingsize 10M
-    keepdays 3
+accesscontrol  {
+    allow *
 }
 
-accesslog $VH_ROOT/logs/access_log {
-    useserver 0
-    rollingsize 10M
+extprocessor sman6crb-app {
+    retrytimeout 7200
+    respbuffer 0
+    inittimeout 60
+    address sman6crb_app-server_1
+    maxconns 1500
+    type proxy
 }
 
 index  {
-    useserver 1
-    indexfiles index.php, index.html
+    autoindex 0
+    autoindexuri /_autoindex/default.php
+    useserver 0
+    indexfiles index.html, index.php
 }
 
-extprocessor Docker WS {
-    type proxy
-    address app-server
-    maxconns 1500
-    inittimeout 60
-    retrytimeout 7200
-    respbuffer 0
-}
-
-context / {
-    type proxy
-    handler Docker WS
-    adddefaultcharset off
-    enableipgeo 1
+expires  {
+    enableexpires 1
 }
 
 rewrite  {
     enable 1
     autoloadhtaccess 1
-    rules <<<MY_END
-<IfModule mod_rewrite.c>
-    <IfModule mod_negotiation.c>
-        Options -MultiViews -Indexes
-    </IfModule>
-
-    RewriteEngine On
-
-    # Handle Authorization Header
-    RewriteCond %{HTTP:Authorization} .
-    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-
-    # Redirect Trailing Slashes If Not A Folder...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_URI} (.+)/$
-    RewriteRule ^ %1 [L,R=301]
-
-    # Send Requests To Front Controller...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.php [L]
-</IfModule>
-    MY_END
+    loglevel 0
 }
 
-module cache {
-    note <<<MY_END
-enableCache                      0
-enablePrivateCache               0
-checkPublicCache                 1
-checkPrivateCache                1
-qsCache                          1
-reqCookieCache                   1
-ignoreReqCacheCtrl               1
-ignoreRespCacheCtrl              0
-respCookieCache                  1
-expireInSeconds                  3600
-privateExpireInSeconds           3600
-maxStaleAge                      200
-maxCacheObjSize                  10000000
-storagepath                      cachedata
-noCacheDomain
-noCacheUrl
-no-vary                          0
-addEtag                          0
-    MY_END
-    ls_enabled 1
+accesslog $SERVER_ROOT/logs/$VH_NAME.access.log {
+    useserver 0
+    rollingsize 100M
+    compressarchive 1
+    keepdays 7
+}
+
+context / {
+    allowbrowse 1
+    location $DOC_ROOT/
+
+    rewrite  {
+        unknownkeywords rewritefile .htaccess
+        rules rewritefile .htaccess
+    }
+}
+
+errorlog  {
+    useserver 1
+}
+
+vhssl  {
+    keyfile /root/.acme.sh/certs/$VH_NAME/$VH_NAME.key
+    certfile /root/.acme.sh/certs/$VH_NAME/fullchain.cer
+    certchain 1
 }

@@ -286,11 +286,22 @@ virtualhost maintenance {
     setuidmode 2
 }
 
+virtualhost sman6crb {
+    vhroot /var/www/vhosts/$VH_NAME
+    configfile $SERVER_ROOT/conf/vhosts/$VH_NAME/vhconf.conf
+    note Instantiated from template docker
+    allowsymbollink 1
+    enablescript 1
+    restrained 1
+    setuidmode 2
+}
+
 listener HTTP {
     address *:80
     reuseport 1
     secure 0
     map maintenance *
+    map sman6crb sman6crb
 }
 
 listener Default SSL {
@@ -301,6 +312,7 @@ listener Default SSL {
     certchain 1
     map maintenance *
     map sman4crb cbt342223.sman4cirebon.sch.id
+    map sman6crb cbt.sman6cirebon.sch.id
 }
 
 vhtemplate centralConfigLog {
