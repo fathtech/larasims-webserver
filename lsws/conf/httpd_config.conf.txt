@@ -311,8 +311,6 @@ listener Default SSL {
     certfile /usr/local/lsws/admin/conf/webadmin.crt
     certchain 1
     map maintenance *
-    map sman4crb cbt342223.sman4cirebon.sch.id
-    map sman6crb cbt.sman6cirebon.sch.id
 }
 
 vhtemplate centralConfigLog {
