@@ -276,17 +276,30 @@ virtualhost sman8crb {
     maxkeepalivereq 10
 }
 
+virtualhost maintenance {
+    vhroot /var/www/vhosts/$VH_NAME
+    configfile $SERVER_ROOT/conf/vhosts/$VH_NAME/vhconf.conf
+    note Instantiated from template docker
+    allowsymbollink 1
+    enablescript 1
+    restrained 1
+    setuidmode 2
+}
+
 listener HTTP {
     address *:80
     reuseport 1
     secure 0
+    map maintenance *
 }
 
-listener HTTPS {
+listener Default SSL {
     address *:443
     secure 1
     keyfile /usr/local/lsws/admin/conf/webadmin.key
     certfile /usr/local/lsws/admin/conf/webadmin.crt
+    certchain 1
+    map maintenance *
 }
 
 vhtemplate centralConfigLog {

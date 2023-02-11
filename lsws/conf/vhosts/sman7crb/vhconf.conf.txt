@@ -1,56 +1,58 @@
-enableipgeo 1
 enablebr 1
 adminemails support@fathtech.co.id
-docroot $VH_ROOT/html/
+docroot $VH_ROOT
+enableipgeo 1
 enablegzip 1
 
-extprocessor Docker WS {
-    type proxy
-    address app-server
-    maxconns 1500
-    inittimeout 60
-    retrytimeout 7200
-    respbuffer 0
-}
-
 rewrite  {
+    unknownkeywords <ifmodule mod_rewrite.c>
+    unknownkeywords <ifmodule mod_negotiation.c>
+    unknownkeywords options -MultiViews -Indexes
+    unknownkeywords rewriterule ^ index.php [L]
+    unknownkeywords </ifmodule> 
+    rules <<<MY_END
+<ifmodule mod_rewrite.c>
+<ifmodule mod_negotiation.c>
+options -MultiViews -Indexes
+</ifmodule> 
+rewriteengine On
+rewritecond %{HTTP:Authorization} .
+rewriterule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+rewritecond %{REQUEST_FILENAME} !-d
+rewritecond %{REQUEST_URI} (.+)/$
+rewriterule ^ %1 [L,R=301]
+rewritecond %{REQUEST_FILENAME} !-d
+rewritecond %{REQUEST_FILENAME} !-f
+rewriterule ^ index.php [L]
+</ifmodule> 
+    MY_END
+    unknownkeywords </ifmodule> 
+    unknownkeywords rewriteengine On
+    unknownkeywords rewritecond %{HTTP:Authorization} .
+    unknownkeywords rewriterule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+    unknownkeywords rewritecond %{REQUEST_FILENAME} !-d
+    unknownkeywords rewritecond %{REQUEST_URI} (.+)/$
+    unknownkeywords rewriterule ^ %1 [L,R=301]
+    unknownkeywords rewritecond %{REQUEST_FILENAME} !-d
+    unknownkeywords rewritecond %{REQUEST_FILENAME} !-f
     enable 1
     autoloadhtaccess 1
-    rules <<<MY_END
-<IfModule mod_rewrite.c>
-    <IfModule mod_negotiation.c>
-        Options -MultiViews -Indexes
-    </IfModule>
-
-    RewriteEngine On
-
-    # Handle Authorization Header
-    RewriteCond %{HTTP:Authorization} .
-    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-
-    # Redirect Trailing Slashes If Not A Folder...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_URI} (.+)/$
-    RewriteRule ^ %1 [L,R=301]
-
-    # Send Requests To Front Controller...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.php [L]
-</IfModule>
-    MY_END
 }
 
-index  {
-    indexfiles index.php, index.html
+errorlog $VH_ROOT/logs/error_log {
+    keepdays 3
+    rollingsize 10M
+    loglevel ERROR
     useserver 1
 }
 
-context / {
-    enableipgeo 1
+extprocessor Docker WS {
+    maxconns 1500
+    address app-server
+    retrytimeout 7200
+    respbuffer 0
     type proxy
-    handler Docker WS
-    adddefaultcharset off
+    inittimeout 60
 }
 
 module cache {
@@ -77,14 +79,19 @@ addEtag                          0
     ls_enabled 1
 }
 
-errorlog $VH_ROOT/logs/error_log {
-    loglevel ERROR
-    keepdays 3
-    useserver 1
+accesslog $VH_ROOT/logs/access_log {
     rollingsize 10M
+    useserver 0
 }
 
-accesslog $VH_ROOT/logs/access_log {
-    useserver 0
-    rollingsize 10M
+index  {
+    indexfiles index.php, index.html
+    useserver 1
+}
+
+context / {
+    adddefaultcharset off
+    enableipgeo 1
+    type proxy
+    handler Docker WS
 }

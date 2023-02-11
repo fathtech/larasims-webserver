@@ -23,7 +23,7 @@ index  {
 
 extprocessor Docker WS {
   type                    proxy
-  address                 10.10.10.5
+  address                 app-server
   maxConns                1500
   initTimeout             60
   retryTimeout            7200

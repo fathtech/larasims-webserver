@@ -1,4 +1,4 @@
-docroot $VH_ROOT/html/
+docroot $VH_ROOT
 adminemails support@fathtech.co.id
 enablegzip 1
 enablebr 1
@@ -38,31 +38,38 @@ context / {
 }
 
 rewrite  {
+    rules <<<MY_END
+<ifmodule mod_rewrite.c>
+<ifmodule mod_negotiation.c>
+options -MultiViews -Indexes
+</ifmodule> 
+rewriteengine On
+rewritecond %{HTTP:Authorization} .
+rewriterule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+rewritecond %{REQUEST_FILENAME} !-d
+rewritecond %{REQUEST_URI} (.+)/$
+rewriterule ^ %1 [L,R=301]
+rewritecond %{REQUEST_FILENAME} !-d
+rewritecond %{REQUEST_FILENAME} !-f
+rewriterule ^ index.php [L]
+</ifmodule> 
+    MY_END
     enable 1
     autoloadhtaccess 1
-    rules <<<MY_END
-<IfModule mod_rewrite.c>
-    <IfModule mod_negotiation.c>
-        Options -MultiViews -Indexes
-    </IfModule>
-
-    RewriteEngine On
-
-    # Handle Authorization Header
-    RewriteCond %{HTTP:Authorization} .
-    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-
-    # Redirect Trailing Slashes If Not A Folder...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_URI} (.+)/$
-    RewriteRule ^ %1 [L,R=301]
-
-    # Send Requests To Front Controller...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.php [L]
-</IfModule>
-    MY_END
+    unknownkeywords <ifmodule mod_rewrite.c>
+    unknownkeywords <ifmodule mod_negotiation.c>
+    unknownkeywords options -MultiViews -Indexes
+    unknownkeywords </ifmodule> 
+    unknownkeywords rewriteengine On
+    unknownkeywords rewritecond %{HTTP:Authorization} .
+    unknownkeywords rewriterule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+    unknownkeywords rewritecond %{REQUEST_FILENAME} !-d
+    unknownkeywords rewritecond %{REQUEST_URI} (.+)/$
+    unknownkeywords rewriterule ^ %1 [L,R=301]
+    unknownkeywords rewritecond %{REQUEST_FILENAME} !-d
+    unknownkeywords rewritecond %{REQUEST_FILENAME} !-f
+    unknownkeywords rewriterule ^ index.php [L]
+    unknownkeywords </ifmodule> 
 }
 
 module cache {
