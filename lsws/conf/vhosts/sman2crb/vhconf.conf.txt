@@ -4,65 +4,7 @@ adminemails support@fathtech.co.id
 enableipgeo 1
 enablegzip 1
 
-accesslog $VH_ROOT/logs/access_log {
-    rollingsize 10M
-    useserver 0
-}
-
-index  {
-    useserver 1
-    indexfiles index.php, index.html
-}
-
-extprocessor Docker WS {
-    maxconns 1500
-    inittimeout 60
-    retrytimeout 7200
-    respbuffer 0
-    type proxy
-    address app-server
-}
-
-context / {
-    handler Docker WS
-    adddefaultcharset off
-    enableipgeo 1
-    type proxy
-}
-
-module cache {
-    note <<<MY_END
-enableCache                      0
-enablePrivateCache               0
-checkPublicCache                 1
-checkPrivateCache                1
-qsCache                          1
-reqCookieCache                   1
-ignoreReqCacheCtrl               1
-ignoreRespCacheCtrl              0
-respCookieCache                  1
-expireInSeconds                  3600
-privateExpireInSeconds           3600
-maxStaleAge                      200
-maxCacheObjSize                  10000000
-storagepath                      cachedata
-noCacheDomain
-noCacheUrl
-no-vary                          0
-addEtag                          0
-    MY_END
-    ls_enabled 1
-}
-
-errorlog $VH_ROOT/logs/error_log {
-    loglevel ERROR
-    rollingsize 10M
-    keepdays 3
-    useserver 1
-}
-
 rewrite  {
-    unknownkeywords rewritecond %{REQUEST_URI} (.+)/$
     unknownkeywords rewriterule ^ %1 [L,R=301]
     unknownkeywords rewritecond %{REQUEST_FILENAME} !-d
     unknownkeywords rewritecond %{REQUEST_FILENAME} !-f
@@ -94,4 +36,62 @@ rewriterule ^ index.php [L]
     unknownkeywords rewritecond %{HTTP:Authorization} .
     unknownkeywords rewriterule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
     unknownkeywords rewritecond %{REQUEST_FILENAME} !-d
+    unknownkeywords rewritecond %{REQUEST_URI} (.+)/$
+}
+
+extprocessor sman2crb-app {
+    inittimeout 60
+    retrytimeout 7200
+    respbuffer 0
+    type proxy
+    address sman2crb_app-server_1
+    maxconns 1500
+}
+
+module cache {
+    note <<<MY_END
+enableCache                      0
+enablePrivateCache               0
+checkPublicCache                 1
+checkPrivateCache                1
+qsCache                          1
+reqCookieCache                   1
+ignoreReqCacheCtrl               1
+ignoreRespCacheCtrl              0
+respCookieCache                  1
+expireInSeconds                  3600
+privateExpireInSeconds           3600
+maxStaleAge                      200
+maxCacheObjSize                  10000000
+storagepath                      cachedata
+noCacheDomain
+noCacheUrl
+no-vary                          0
+addEtag                          0
+    MY_END
+    ls_enabled 1
+}
+
+accesslog $VH_ROOT/logs/access_log {
+    rollingsize 10M
+    useserver 0
+}
+
+errorlog $VH_ROOT/logs/error_log {
+    useserver 1
+    rollingsize 10M
+    keepdays 3
+    loglevel ERROR
+}
+
+index  {
+    indexfiles index.php, index.html
+    useserver 1
+}
+
+context / {
+    handler sman2crb-app
+    adddefaultcharset off
+    enableipgeo 1
+    type proxy
 }

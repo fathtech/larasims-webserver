@@ -1,43 +1,11 @@
-enablebr 1
-docroot $VH_ROOT
-enableipgeo 1
 adminemails support@fathtech.co.id
+enablebr 1
+enableipgeo 1
+docroot $VH_ROOT
 enablegzip 1
 
-index  {
-    useserver 1
-    indexfiles index.php, index.html
-}
-
-accesslog $VH_ROOT/logs/access_log {
-    useserver 0
-    rollingsize 10M
-}
-
-context / {
-    handler Docker WS
-    adddefaultcharset off
-    type proxy
-    enableipgeo 1
-}
-
-extprocessor Docker WS {
-    maxconns 1500
-    inittimeout 60
-    retrytimeout 7200
-    respbuffer 0
-    type proxy
-    address app-server
-}
-
-errorlog $VH_ROOT/logs/error_log {
-    rollingsize 10M
-    loglevel ERROR
-    keepdays 3
-    useserver 1
-}
-
 rewrite  {
+    enable 1
     autoloadhtaccess 1
     unknownkeywords <ifmodule mod_rewrite.c>
     unknownkeywords <ifmodule mod_negotiation.c>
@@ -50,8 +18,6 @@ rewrite  {
     unknownkeywords rewritecond %{REQUEST_URI} (.+)/$
     unknownkeywords rewriterule ^ %1 [L,R=301]
     unknownkeywords rewritecond %{REQUEST_FILENAME} !-d
-    unknownkeywords rewritecond %{REQUEST_FILENAME} !-f
-    enable 1
     rules <<<MY_END
 <ifmodule mod_rewrite.c>
 <ifmodule mod_negotiation.c>
@@ -68,8 +34,42 @@ rewritecond %{REQUEST_FILENAME} !-f
 rewriterule ^ index.php [L]
 </ifmodule> 
     MY_END
+    unknownkeywords rewritecond %{REQUEST_FILENAME} !-f
     unknownkeywords rewriterule ^ index.php [L]
     unknownkeywords </ifmodule> 
+}
+
+index  {
+    indexfiles index.php, index.html
+    useserver 1
+}
+
+accesslog $VH_ROOT/logs/access_log {
+    rollingsize 10M
+    useserver 0
+}
+
+context / {
+    type proxy
+    handler sman3crb-app
+    adddefaultcharset off
+    enableipgeo 1
+}
+
+extprocessor sman3crb-app {
+    retrytimeout 7200
+    respbuffer 0
+    type proxy
+    address sman3crb_app-server_1
+    maxconns 1500
+    inittimeout 60
+}
+
+errorlog $VH_ROOT/logs/error_log {
+    rollingsize 10M
+    useserver 1
+    keepdays 3
+    loglevel ERROR
 }
 
 module cache {

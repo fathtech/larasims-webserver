@@ -1,11 +1,18 @@
+adminemails support@fathtech.co.id
+docroot $VH_ROOT
 enableipgeo 1
 enablebr 1
-docroot $VH_ROOT
-adminemails support@fathtech.co.id
 enablegzip 1
 
 rewrite  {
-    unknownkeywords </ifmodule> 
+    enable 1
+    autoloadhtaccess 1
+    unknownkeywords rewriteengine On
+    unknownkeywords rewritecond %{HTTP:Authorization} .
+    unknownkeywords rewriterule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+    unknownkeywords rewritecond %{REQUEST_FILENAME} !-d
+    unknownkeywords rewritecond %{REQUEST_URI} (.+)/$
+    unknownkeywords rewriterule ^ %1 [L,R=301]
     rules <<<MY_END
 <ifmodule mod_rewrite.c>
 <ifmodule mod_negotiation.c>
@@ -22,37 +29,42 @@ rewritecond %{REQUEST_FILENAME} !-f
 rewriterule ^ index.php [L]
 </ifmodule> 
     MY_END
-    unknownkeywords rewritecond %{HTTP:Authorization} .
-    unknownkeywords rewriterule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-    unknownkeywords rewritecond %{REQUEST_FILENAME} !-d
-    unknownkeywords rewritecond %{REQUEST_URI} (.+)/$
-    unknownkeywords rewriterule ^ %1 [L,R=301]
-    unknownkeywords rewritecond %{REQUEST_FILENAME} !-d
-    unknownkeywords rewritecond %{REQUEST_FILENAME} !-f
-    unknownkeywords rewriterule ^ index.php [L]
     unknownkeywords <ifmodule mod_rewrite.c>
     unknownkeywords <ifmodule mod_negotiation.c>
     unknownkeywords options -MultiViews -Indexes
     unknownkeywords </ifmodule> 
-    unknownkeywords rewriteengine On
-    enable 1
-    autoloadhtaccess 1
+    unknownkeywords rewritecond %{REQUEST_FILENAME} !-d
+    unknownkeywords rewritecond %{REQUEST_FILENAME} !-f
+    unknownkeywords rewriterule ^ index.php [L]
+    unknownkeywords </ifmodule> 
+}
+
+index  {
+    indexfiles index.php, index.html
+    useserver 1
+}
+
+extprocessor sman4crb-app {
+    maxconns 1500
+    inittimeout 60
+    retrytimeout 7200
+    address sman4crb_app-server_1
+    type proxy
+    respbuffer 0
+}
+
+errorlog $VH_ROOT/logs/error_log {
+    keepdays 3
+    rollingsize 10M
+    loglevel ERROR
+    useserver 1
 }
 
 context / {
+    handler sman4crb-app
     adddefaultcharset off
     enableipgeo 1
     type proxy
-    handler Docker WS
-}
-
-extprocessor Docker WS {
-    retrytimeout 7200
-    respbuffer 0
-    address app-server
-    maxconns 1500
-    type proxy
-    inittimeout 60
 }
 
 accesslog $VH_ROOT/logs/access_log {
@@ -82,16 +94,4 @@ no-vary                          0
 addEtag                          0
     MY_END
     ls_enabled 1
-}
-
-errorlog $VH_ROOT/logs/error_log {
-    keepdays 3
-    rollingsize 10M
-    useserver 1
-    loglevel ERROR
-}
-
-index  {
-    indexfiles index.php, index.html
-    useserver 1
 }

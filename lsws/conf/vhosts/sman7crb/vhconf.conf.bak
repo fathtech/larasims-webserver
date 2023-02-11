@@ -1,4 +1,4 @@
-docRoot                   $VH_ROOT/html/
+docRoot                   $VH_ROOT
 adminEmails               support@fathtech.co.id
 enableGzip                1
 enableBr                  1
@@ -40,7 +40,6 @@ context / {
 rewrite  {
   enable                  1
   autoLoadHtaccess        1
-  rules                   <<<END_rules
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
@@ -62,9 +61,6 @@ rewrite  {
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
-  END_rules
-
-
 }
 
 module cache {

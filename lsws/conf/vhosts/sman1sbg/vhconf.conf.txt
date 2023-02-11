@@ -4,18 +4,6 @@ adminemails support@fathtech.co.id
 enableipgeo 1
 enablegzip 1
 
-index  {
-    useserver 1
-    indexfiles index.php, index.html
-}
-
-context / {
-    adddefaultcharset off
-    enableipgeo 1
-    type proxy
-    handler Docker WS
-}
-
 rewrite  {
     enable 1
     autoloadhtaccess 1
@@ -51,9 +39,23 @@ rewriterule ^ index.php [L]
     unknownkeywords </ifmodule> 
 }
 
+extprocessor sman1sbg-app {
+    inittimeout 60
+    retrytimeout 7200
+    address sman1sbg_app-server_1
+    maxconns 1500
+    respbuffer 0
+    type proxy
+}
+
+index  {
+    useserver 1
+    indexfiles index.php, index.html
+}
+
 accesslog $VH_ROOT/logs/access_log {
-    rollingsize 10M
     useserver 0
+    rollingsize 10M
 }
 
 errorlog $VH_ROOT/logs/error_log {
@@ -63,13 +65,11 @@ errorlog $VH_ROOT/logs/error_log {
     keepdays 3
 }
 
-extprocessor Docker WS {
-    inittimeout 60
-    address app-server
-    maxconns 1500
-    retrytimeout 7200
-    respbuffer 0
+context / {
+    adddefaultcharset off
+    enableipgeo 1
     type proxy
+    handler sman1sbg-app
 }
 
 module cache {

@@ -21,9 +21,9 @@ index  {
     indexfiles index.php, index.html
 }
 
-extprocessor Docker WS {
+extprocessor sman1crb-app {
     type proxy
-    address app-server
+    address sman1crb_app-server_1
     maxconns 1500
     inittimeout 60
     retrytimeout 7200
@@ -32,7 +32,7 @@ extprocessor Docker WS {
 
 context / {
     type proxy
-    handler Docker WS
+    handler sman1crb-app
     adddefaultcharset off
     enableipgeo 1
 }

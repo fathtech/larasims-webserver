@@ -1,4 +1,4 @@
-docRoot                   $VH_ROOT/html/
+docRoot                   $VH_ROOT
 adminEmails               support@fathtech.co.id
 enableGzip                1
 enableBr                  1
@@ -23,7 +23,7 @@ index  {
 
 extprocessor Docker WS {
   type                    proxy
-  address                 app-server
+  address                 sman4crb_app-server_1
   maxConns                1500
   initTimeout             60
   retryTimeout            7200
@@ -40,31 +40,27 @@ context / {
 rewrite  {
   enable                  1
   autoLoadHtaccess        1
-  rules                   <<<END_rules
 <IfModule mod_rewrite.c>
-    <IfModule mod_negotiation.c>
-        Options -MultiViews -Indexes
-    </IfModule>
-
-    RewriteEngine On
-
-    # Handle Authorization Header
-    RewriteCond %{HTTP:Authorization} .
-    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-
-    # Redirect Trailing Slashes If Not A Folder...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_URI} (.+)/$
-    RewriteRule ^ %1 [L,R=301]
-
-    # Send Requests To Front Controller...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.php [L]
+<IfModule mod_negotiation.c>
+Options -MultiViews -Indexes
 </IfModule>
-  END_rules
 
+RewriteEngine On
 
+# Handle Authorization Header
+RewriteCond %{HTTP:Authorization} .
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+# Redirect Trailing Slashes If Not A Folder...
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} (.+)/$
+RewriteRule ^ %1 [L,R=301]
+
+# Send Requests To Front Controller...
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.php [L]
+</IfModule>
 }
 
 module cache {

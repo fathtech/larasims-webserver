@@ -1,58 +1,40 @@
-enablebr 1
+enableipgeo 1
 adminemails support@fathtech.co.id
 docroot $VH_ROOT
-enableipgeo 1
+enablebr 1
 enablegzip 1
 
-rewrite  {
-    unknownkeywords <ifmodule mod_rewrite.c>
-    unknownkeywords <ifmodule mod_negotiation.c>
-    unknownkeywords options -MultiViews -Indexes
-    unknownkeywords rewriterule ^ index.php [L]
-    unknownkeywords </ifmodule> 
-    rules <<<MY_END
-<ifmodule mod_rewrite.c>
-<ifmodule mod_negotiation.c>
-options -MultiViews -Indexes
-</ifmodule> 
-rewriteengine On
-rewritecond %{HTTP:Authorization} .
-rewriterule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-rewritecond %{REQUEST_FILENAME} !-d
-rewritecond %{REQUEST_URI} (.+)/$
-rewriterule ^ %1 [L,R=301]
-rewritecond %{REQUEST_FILENAME} !-d
-rewritecond %{REQUEST_FILENAME} !-f
-rewriterule ^ index.php [L]
-</ifmodule> 
-    MY_END
-    unknownkeywords </ifmodule> 
-    unknownkeywords rewriteengine On
-    unknownkeywords rewritecond %{HTTP:Authorization} .
-    unknownkeywords rewriterule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-    unknownkeywords rewritecond %{REQUEST_FILENAME} !-d
-    unknownkeywords rewritecond %{REQUEST_URI} (.+)/$
-    unknownkeywords rewriterule ^ %1 [L,R=301]
-    unknownkeywords rewritecond %{REQUEST_FILENAME} !-d
-    unknownkeywords rewritecond %{REQUEST_FILENAME} !-f
-    enable 1
-    autoloadhtaccess 1
+context / {
+    handler sman7crb-app
+    type proxy
+    adddefaultcharset off
+    enableipgeo 1
+}
+
+accesslog $VH_ROOT/logs/access_log {
+    rollingsize 10M
+    useserver 0
+}
+
+extprocessor sman7crb-app {
+    inittimeout 60
+    address sman7crb_app-server_1
+    retrytimeout 7200
+    type proxy
+    maxconns 1500
+    respbuffer 0
 }
 
 errorlog $VH_ROOT/logs/error_log {
-    keepdays 3
-    rollingsize 10M
     loglevel ERROR
     useserver 1
+    keepdays 3
+    rollingsize 10M
 }
 
-extprocessor Docker WS {
-    maxconns 1500
-    address app-server
-    retrytimeout 7200
-    respbuffer 0
-    type proxy
-    inittimeout 60
+index  {
+    useserver 1
+    indexfiles index.php, index.html
 }
 
 module cache {
@@ -79,19 +61,37 @@ addEtag                          0
     ls_enabled 1
 }
 
-accesslog $VH_ROOT/logs/access_log {
-    rollingsize 10M
-    useserver 0
-}
-
-index  {
-    indexfiles index.php, index.html
-    useserver 1
-}
-
-context / {
-    adddefaultcharset off
-    enableipgeo 1
-    type proxy
-    handler Docker WS
+rewrite  {
+    enable 1
+    autoloadhtaccess 1
+    unknownkeywords </ifmodule> 
+    unknownkeywords rewriteengine On
+    unknownkeywords rewritecond %{HTTP:Authorization} .
+    unknownkeywords rewriterule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+    unknownkeywords rewritecond %{REQUEST_FILENAME} !-d
+    unknownkeywords rewritecond %{REQUEST_URI} (.+)/$
+    rules <<<MY_END
+<ifmodule mod_rewrite.c>
+<ifmodule mod_negotiation.c>
+options -MultiViews -Indexes
+</ifmodule> 
+rewriteengine On
+rewritecond %{HTTP:Authorization} .
+rewriterule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+rewritecond %{REQUEST_FILENAME} !-d
+rewritecond %{REQUEST_URI} (.+)/$
+rewriterule ^ %1 [L,R=301]
+rewritecond %{REQUEST_FILENAME} !-d
+rewritecond %{REQUEST_FILENAME} !-f
+rewriterule ^ index.php [L]
+</ifmodule> 
+    MY_END
+    unknownkeywords <ifmodule mod_rewrite.c>
+    unknownkeywords <ifmodule mod_negotiation.c>
+    unknownkeywords options -MultiViews -Indexes
+    unknownkeywords rewriterule ^ %1 [L,R=301]
+    unknownkeywords rewritecond %{REQUEST_FILENAME} !-d
+    unknownkeywords rewritecond %{REQUEST_FILENAME} !-f
+    unknownkeywords rewriterule ^ index.php [L]
+    unknownkeywords </ifmodule> 
 }

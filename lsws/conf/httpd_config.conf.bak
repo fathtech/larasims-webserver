@@ -291,6 +291,7 @@ listener Default SSL {
   keyFile                 /usr/local/lsws/admin/conf/webadmin.key
   certFile                /usr/local/lsws/admin/conf/webadmin.crt
   certChain               1
+  map                     maintenance *
 }
 
 vhTemplate centralConfigLog {
